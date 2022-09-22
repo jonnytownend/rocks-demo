@@ -20,7 +20,7 @@
       <div id="unity-footer">
         <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Rocks Demo</div>
+        <div id="unity-build-title">Rocks Demo v1.0</div>
       </div>
     </div>
     <script>
@@ -95,8 +95,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        canvas.style.width = `${window.innerWidth * 0.9}px`;
+        canvas.style.height = `${window.innerHeight * 0.9}px`;
       }
 
       loadingBar.style.display = "block";
