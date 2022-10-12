@@ -3,178 +3,70 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Rocks Demo</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
+    <title>🪨 Rocks Demo</title>
   </head>
   <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="res-settings">
-          <div id="unity-webgl-logo"></div>
-          <h3 style="margin-right: 8px;">Quality:</h3>
-          <button class="res-button" id="button-low-res">Low</button>
-          <button class="res-button" id="button-medium-res">Medium</button>
-          <button class="res-button" id="button-high-res">High</button>
-          <p id="res-hint">Stuttering may occur for the first minute.<br />If stuttering continues, choose 'Low' setting.</p>
-          <div style="flex: 1"></div>
-          <div id="unity-build-title">Rocks Demo v1.0</div>
-          <div id="unity-fullscreen-button"></div>
+    <div id="container">
+      <div class="centered">
+        <h1>🪨 Rocks demo 🪨</h1>
+        <p>Choose a demo version:</p>
+        <div class="button-container">
+          <a class="button" href="./v1">v1.0</a>
+          <a class="button" href="./v2">v2.0</a>
         </div>
       </div>
     </div>
-    <style>
-      #res-settings {
-        display: flex;
-        align-items: center;
-        font-family: Arial, Helvetica, sans-serif;
-        color: lightgray;
-      }
-      .res-button {
-        cursor: pointer;
-        padding: 8px;
-        margin-right: 8px;
-        border: none;
-        background-color: black;
-        color: lightgray;
-        border: 1px solid lightgray;
-        min-width: 80px;
-      }
-      .res-button-selected {
-        background-color: lightgray;
-        color: black;
-        border: 1px solid lightgray;
-      }
-      #res-hint {
-        margin-left: 8px;
-        opacity: 0.5;
-      }
-      #unity-build-title {
-        margin-right: 16px;
-      }
-    </style>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
-
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Rocks_Demo_v1.0.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/Rocks_Demo_v1.0.data",
-        frameworkUrl: buildUrl + "/Rocks_Demo_v1.0.framework.js",
-        codeUrl: buildUrl + "/Rocks_Demo_v1.0.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Jonny Townend",
-        productName: "Rocks Demo",
-        productVersion: "1.0",
-        showBanner: unityShowBanner,
-      };
-
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        container.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
-
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-
-        canvas.style.width = `${window.innerWidth * 0.9}px`;
-        canvas.style.height = `${window.innerHeight * 0.9}px`;
-      }
-
-      loadingBar.style.display = "block";
-
-      config.devicePixelRatio = localStorage["rocks-device-pixel-ratio"] ?? 1;
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
-        });
-      };
-      document.body.appendChild(script);
-
-      // Set selected resolution button
-      if (config.devicePixelRatio == 0.5) {
-        document.getElementById('button-low-res').classList.add('res-button-selected')
-      } else if (config.devicePixelRatio == 0.75) {
-        document.getElementById('button-medium-res').classList.add('res-button-selected')
-      } else if (config.devicePixelRatio == 1) {
-        document.getElementById('button-high-res').classList.add('res-button-selected')
-      }
-
-      // Resolution buttons bindings
-      const reloadAtPixelRatio = (pixelRatio) => {
-        localStorage["rocks-device-pixel-ratio"] = pixelRatio;
-        location.reload();
-      }
-
-      document.getElementById('button-low-res').onclick = () => reloadAtPixelRatio(0.5);
-      document.getElementById('button-medium-res').onclick = () => reloadAtPixelRatio(0.75);
-      document.getElementById('button-high-res').onclick = () => reloadAtPixelRatio(1);
-    </script>
   </body>
+  <style>
+    body {
+      background-color: black;
+      color: whitesmoke;
+      margin: 0;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: rgb(33, 36, 36);
+      width: 100%;
+      height: 100vh;
+    }
+    .centered {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: black;
+      padding: 128px;
+    }
+    .button-container {
+      display: flex;
+    }
+    h1 {
+      font-size: 64px;
+      margin-top: 0;
+    }
+    p {
+      font-size: 20px;
+    }
+    .button {
+      font-size: 24px;
+      text-decoration: none;
+      text-align: center;
+      border: 1px solid whitesmoke;
+      color: whitesmoke;
+      padding: 8px;
+      margin-right: 16px;
+      width: 200px;
+    }
+    .button:last-child {
+      margin-right: 0;
+    }
+    .button:hover {
+      border: 1px solid black;
+      background-color: whitesmoke;
+      color: black;
+    }
+  </style>
 </html>
